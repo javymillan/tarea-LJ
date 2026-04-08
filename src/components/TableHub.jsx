@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, BookOpen, Brain, Circle, Compass, CheckCircle, Lock } from 'lucide-react';
+import { ArrowLeft, BookOpen, Brain, Circle, Compass, CheckCircle, Lock, CheckSquare, Palette } from 'lucide-react';
 
 const TableHub = ({ tableNumber, onBack, onSelectLevel, progress }) => {
   const tableLevelProgress = progress[tableNumber] || {};
@@ -12,16 +12,22 @@ const TableHub = ({ tableNumber, onBack, onSelectLevel, progress }) => {
     { id: 'mental',   name: 'Mente Rápida',  icon: <Brain size={36} />,   level: 2 },
     { id: 'bubbles',  name: 'Burbujas',       icon: <Circle size={36} />,  level: 3 },
     { id: 'maze',     name: 'Laberinto',      icon: <Compass size={36} />, level: 4 },
+    { id: 'true_false', name: 'Verdadero/Falso', icon: <CheckSquare size={36} />, level: 5 },
+    { id: 'color_by_number', name: 'Colorea', icon: <Palette size={36} />, level: 6 },
   ];
 
   // Unlock logic:
   // Level 1 & 2: always open
   // Level 3: needs 1 & 2 complete
   // Level 4: needs 3 complete
+  // Level 5: needs 4 complete
+  // Level 6: needs 5 complete
   const isUnlocked = (lvl) => {
     if (lvl.level <= 2) return true;
     if (lvl.level === 3) return isCompleted('classic') && isCompleted('mental');
     if (lvl.level === 4) return isCompleted('bubbles');
+    if (lvl.level === 5) return isCompleted('maze');
+    if (lvl.level === 6) return isCompleted('true_false');
     return false;
   };
 
@@ -35,7 +41,7 @@ const TableHub = ({ tableNumber, onBack, onSelectLevel, progress }) => {
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
-      style={{ padding: '2rem', maxWidth: '860px', margin: '0 auto', width: '100%' }}
+      style={{ padding: '2rem', maxWidth: '1000px', margin: '0 auto', width: '100%' }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <button className="button secondary" onClick={onBack}>
@@ -50,11 +56,12 @@ const TableHub = ({ tableNumber, onBack, onSelectLevel, progress }) => {
       {/* Progress bar */}
       {(() => {
         const done = levels.filter(l => isCompleted(l.id)).length;
-        const pct = (done / 4) * 100;
+        const total = levels.length;
+        const pct = (done / total) * 100;
         return (
           <div style={{ marginBottom: '1.8rem' }}>
             <div style={{ color: '#fff', fontSize: '1rem', marginBottom: '6px', opacity: 0.8 }}>
-              Progreso: {done}/4 misiones completadas
+              Progreso: {done}/{total} misiones completadas
             </div>
             <div style={{ background: 'rgba(255,255,255,0.15)', borderRadius: '999px', height: '12px', overflow: 'hidden' }}>
               <motion.div
@@ -73,7 +80,7 @@ const TableHub = ({ tableNumber, onBack, onSelectLevel, progress }) => {
         );
       })()}
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '20px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
         {levels.map((lvl, i) => {
           const completed = isCompleted(lvl.id);
           const unlocked = isUnlocked(lvl);
@@ -160,7 +167,7 @@ const TableHub = ({ tableNumber, onBack, onSelectLevel, progress }) => {
                 {unlocked ? lvl.icon : <Lock size={36} />}
               </div>
 
-              <h3 style={{ fontSize: '1.3rem', margin: 0, color: textColor, fontWeight: 700 }}>
+              <h3 style={{ fontSize: '1.2rem', margin: 0, color: textColor, fontWeight: 700 }}>
                 {lvl.name}
               </h3>
 
@@ -168,15 +175,15 @@ const TableHub = ({ tableNumber, onBack, onSelectLevel, progress }) => {
               {completed ? (
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: '5px',
-                  fontWeight: 700, color: '#fff', fontSize: '0.95rem',
+                  fontWeight: 700, color: '#fff', fontSize: '0.9rem',
                   background: 'rgba(255,255,255,0.2)', borderRadius: '999px',
                   padding: '4px 14px'
                 }}>
-                  <CheckCircle size={16} /> ¡Completado!
+                  <CheckCircle size={15} /> ¡Listo!
                 </div>
               ) : unlocked ? (
                 <div style={{
-                  fontWeight: 700, color: '#FFDC00', fontSize: '1rem',
+                  fontWeight: 700, color: '#FFDC00', fontSize: '0.9rem',
                   background: 'rgba(255,220,0,0.15)', borderRadius: '999px',
                   padding: '4px 16px', letterSpacing: '1px'
                 }}>
@@ -184,7 +191,7 @@ const TableHub = ({ tableNumber, onBack, onSelectLevel, progress }) => {
                 </div>
               ) : (
                 <div style={{
-                  fontWeight: 600, color: 'rgba(255,255,255,0.35)', fontSize: '0.85rem',
+                  fontWeight: 600, color: 'rgba(255,255,255,0.35)', fontSize: '0.8rem',
                   background: 'rgba(255,255,255,0.06)', borderRadius: '999px',
                   padding: '4px 14px'
                 }}>
@@ -195,12 +202,13 @@ const TableHub = ({ tableNumber, onBack, onSelectLevel, progress }) => {
               {/* Tooltip for locked */}
               {!unlocked && (
                 <div style={{
-                  fontSize: '0.75rem', color: 'rgba(255,255,255,0.3)',
+                  fontSize: '0.7rem', color: 'rgba(255,255,255,0.3)',
                   textAlign: 'center', lineHeight: 1.4
                 }}>
-                  {lvl.level === 3
-                    ? 'Completa niveles 1 y 2 primero'
-                    : 'Completa Burbujas primero'}
+                  {lvl.level === 3 ? 'Completa 1 y 2' : 
+                   lvl.level === 4 ? 'Completa Burbujas' :
+                   lvl.level === 5 ? 'Completa Laberinto' :
+                   'Completa Verdadero/Falso'}
                 </div>
               )}
             </motion.div>

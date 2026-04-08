@@ -6,10 +6,12 @@ import TableQuiz from './components/TableQuiz';
 import MentalMath from './components/MentalMath';
 import BubbleMath from './components/BubbleMath';
 import MazeGame from './components/MazeGame';
+import TrueFalseGame from './components/TrueFalseGame';
+import ColorByNumber from './components/ColorByNumber';
 import { triggerBigConfetti } from './utils/confetti';
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('menu'); // menu, hub, classic, mental, bubbles, maze
+  const [currentPage, setCurrentPage] = useState('menu'); // menu, hub, classic, mental, bubbles, maze, true_false, color_by_number
   const [selectedTable, setSelectedTable] = useState(null);
   
   // Progress structure: { 1: { completed: true, answers: {} }, 2: ... }
@@ -34,14 +36,12 @@ function App() {
     const isReady = Object.keys(progress).length > 0;
     const tables = Array.from({ length: 10 }, (_, i) => i + 1);
     
-    // A table is completed if it has all 4 activities done: classic, mental, bubbles, maze
+    // Check all activities in the list
+    const activities = ['classic', 'mental', 'bubbles', 'maze', 'true_false', 'color_by_number'];
     const isActivityCompleted = (t, activity) => progress[t]?.[activity]?.completed;
     
     const allCompleted = tables.every(t => 
-      isActivityCompleted(t, 'classic') &&
-      isActivityCompleted(t, 'mental') &&
-      isActivityCompleted(t, 'bubbles') &&
-      isActivityCompleted(t, 'maze')
+      activities.every(activity => isActivityCompleted(t, activity))
     );
 
     if (allCompleted && !hasBigWinner && isReady) {
@@ -150,6 +150,30 @@ function App() {
             initialSavedAnswers={
               progress[selectedTable]?.maze?.answers || 
               JSON.parse(localStorage.getItem(`partial_${selectedTable}_maze`) || '[]')
+            }
+          />
+        )}
+
+        {currentPage === 'true_false' && selectedTable && (
+          <TrueFalseGame 
+            key={`true_false-${selectedTable}`}
+            tableNumber={selectedTable}
+            onBack={handleBack}
+            onComplete={(type, data) => handleLevelComplete('true_false', data)}
+            initialSavedAnswers={
+              progress[selectedTable]?.true_false?.answers || {}
+            }
+          />
+        )}
+
+        {currentPage === 'color_by_number' && selectedTable && (
+          <ColorByNumber 
+            key={`color_by_number-${selectedTable}`}
+            tableNumber={selectedTable}
+            onBack={handleBack}
+            onComplete={(type, data) => handleLevelComplete('color_by_number', data)}
+            initialSavedAnswers={
+              progress[selectedTable]?.color_by_number?.answers || {}
             }
           />
         )}
