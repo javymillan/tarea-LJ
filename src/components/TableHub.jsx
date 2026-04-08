@@ -1,65 +1,210 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, BookOpen, Brain, Circle, Compass, CheckCircle } from 'lucide-react';
+import { ArrowLeft, BookOpen, Brain, Circle, Compass, CheckCircle, Lock } from 'lucide-react';
 
 const TableHub = ({ tableNumber, onBack, onSelectLevel, progress }) => {
-  // progress for this specific table is an object with { classic, mental, bubbles, maze }
   const tableLevelProgress = progress[tableNumber] || {};
 
+  const isCompleted = (id) => !!tableLevelProgress[id]?.completed;
+
   const levels = [
-    { id: 'classic', name: 'Tabla Clásica', icon: <BookOpen size={32} /> },
-    { id: 'mental', name: 'Mente Rápida', icon: <Brain size={32} /> },
-    { id: 'bubbles', name: 'Burbujas', icon: <Circle size={32} /> },
-    { id: 'maze', name: 'Laberinto', icon: <Compass size={32} /> }
+    { id: 'classic',  name: 'Tabla Clásica', icon: <BookOpen size={36} />, level: 1 },
+    { id: 'mental',   name: 'Mente Rápida',  icon: <Brain size={36} />,   level: 2 },
+    { id: 'bubbles',  name: 'Burbujas',       icon: <Circle size={36} />,  level: 3 },
+    { id: 'maze',     name: 'Laberinto',      icon: <Compass size={36} />, level: 4 },
   ];
 
+  // Unlock logic:
+  // Level 1 & 2: always open
+  // Level 3: needs 1 & 2 complete
+  // Level 4: needs 3 complete
+  const isUnlocked = (lvl) => {
+    if (lvl.level <= 2) return true;
+    if (lvl.level === 3) return isCompleted('classic') && isCompleted('mental');
+    if (lvl.level === 4) return isCompleted('bubbles');
+    return false;
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: (i) => ({ opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.4 } }),
+  };
+
   return (
-    <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto', width: '100%' }}>
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.9 }}
+      style={{ padding: '2rem', maxWidth: '860px', margin: '0 auto', width: '100%' }}
+    >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <button className="button secondary" onClick={onBack}>
           <ArrowLeft size={20} /> Volver
         </button>
-        <h2 style={{ fontSize: '2.5rem', color: '#fff', textShadow: '1px 2px 5px rgba(0,0,0,0.2)', margin: 0 }}>
-          Misiones de la Tabla del {tableNumber}
+        <h2 style={{ fontSize: '2.2rem', color: '#fff', textShadow: '1px 2px 8px rgba(0,0,0,0.3)', margin: 0, textAlign: 'center' }}>
+          🎮 Misiones — Tabla del {tableNumber}
         </h2>
         <div style={{ width: '105px' }} />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
-        {levels.map(lvl => {
-          const isCompleted = tableLevelProgress[lvl.id]?.completed;
+      {/* Progress bar */}
+      {(() => {
+        const done = levels.filter(l => isCompleted(l.id)).length;
+        const pct = (done / 4) * 100;
+        return (
+          <div style={{ marginBottom: '1.8rem' }}>
+            <div style={{ color: '#fff', fontSize: '1rem', marginBottom: '6px', opacity: 0.8 }}>
+              Progreso: {done}/4 misiones completadas
+            </div>
+            <div style={{ background: 'rgba(255,255,255,0.15)', borderRadius: '999px', height: '12px', overflow: 'hidden' }}>
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${pct}%` }}
+                transition={{ duration: 0.8, ease: 'easeOut' }}
+                style={{
+                  height: '100%',
+                  borderRadius: '999px',
+                  background: 'linear-gradient(90deg, #39CCCC, #2ECC40)',
+                  boxShadow: '0 0 10px rgba(46,204,64,0.5)',
+                }}
+              />
+            </div>
+          </div>
+        );
+      })()}
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '20px' }}>
+        {levels.map((lvl, i) => {
+          const completed = isCompleted(lvl.id);
+          const unlocked = isUnlocked(lvl);
+
+          // Card colors
+          let bg, border, iconColor, textColor, badgeBg, badgeText;
+          if (completed) {
+            bg = 'linear-gradient(135deg, rgba(46,213,115,0.85), rgba(0,180,80,0.85))';
+            border = '2px solid rgba(46,213,115,0.6)';
+            iconColor = '#fff';
+            textColor = '#fff';
+            badgeBg = 'rgba(255,255,255,0.25)';
+            badgeText = '#fff';
+          } else if (unlocked) {
+            bg = 'linear-gradient(135deg, rgba(0,116,217,0.75), rgba(0,60,150,0.75))';
+            border = '2px solid rgba(57,204,204,0.5)';
+            iconColor = '#FFDC00';
+            textColor = '#fff';
+            badgeBg = 'rgba(255,220,0,0.2)';
+            badgeText = '#FFDC00';
+          } else {
+            bg = 'rgba(30,30,60,0.55)';
+            border = '2px solid rgba(255,255,255,0.1)';
+            iconColor = 'rgba(255,255,255,0.3)';
+            textColor = 'rgba(255,255,255,0.4)';
+            badgeBg = 'rgba(255,255,255,0.08)';
+            badgeText = 'rgba(255,255,255,0.4)';
+          }
+
           return (
             <motion.div
               key={lvl.id}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="glass-panel"
+              custom={i}
+              initial="hidden"
+              animate="visible"
+              variants={cardVariants}
+              whileHover={unlocked ? { scale: 1.06, y: -4 } : {}}
+              whileTap={unlocked ? { scale: 0.96 } : {}}
+              onClick={() => unlocked && onSelectLevel(lvl.id)}
               style={{
-                padding: '30px 20px',
+                background: bg,
+                border,
+                borderRadius: '20px',
+                padding: '28px 16px',
                 textAlign: 'center',
-                cursor: 'pointer',
+                cursor: unlocked ? 'pointer' : 'not-allowed',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                gap: '15px',
-                background: isCompleted ? 'rgba(46, 213, 115, 0.9)' : 'var(--card-bg)',
-                color: isCompleted ? 'white' : 'var(--text-dark)'
+                gap: '12px',
+                backdropFilter: 'blur(12px)',
+                boxShadow: completed
+                  ? '0 8px 30px rgba(46,213,115,0.35)'
+                  : unlocked
+                  ? '0 8px 30px rgba(0,116,217,0.35)'
+                  : '0 4px 15px rgba(0,0,0,0.2)',
+                position: 'relative',
+                overflow: 'hidden',
+                transition: 'box-shadow 0.3s',
               }}
-              onClick={() => onSelectLevel(lvl.id)}
             >
-              <div style={{ color: isCompleted ? 'white' : 'var(--primary)' }}>
-                {lvl.icon}
+              {/* Level badge */}
+              <div style={{
+                position: 'absolute', top: '10px', left: '12px',
+                background: badgeBg, color: badgeText,
+                borderRadius: '999px', fontSize: '0.75rem', fontWeight: 700,
+                padding: '2px 10px', letterSpacing: '0.5px'
+              }}>
+                Nivel {lvl.level}
               </div>
-              <h3 style={{ fontSize: '1.5rem', margin: 0 }}>{lvl.name}</h3>
-              {isCompleted ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontWeight: 'bold' }}>
-                  <CheckCircle size={18} /> ¡Completado!
+
+              {/* Shimmer for unlocked */}
+              {unlocked && !completed && (
+                <div style={{
+                  position: 'absolute', top: 0, left: '-60%', width: '40%', height: '100%',
+                  background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent)',
+                  animation: 'shimmer 2.5s infinite',
+                  pointerEvents: 'none',
+                }} />
+              )}
+
+              {/* Icon / Lock */}
+              <div style={{ color: iconColor, marginTop: '10px' }}>
+                {unlocked ? lvl.icon : <Lock size={36} />}
+              </div>
+
+              <h3 style={{ fontSize: '1.3rem', margin: 0, color: textColor, fontWeight: 700 }}>
+                {lvl.name}
+              </h3>
+
+              {/* Status badge */}
+              {completed ? (
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: '5px',
+                  fontWeight: 700, color: '#fff', fontSize: '0.95rem',
+                  background: 'rgba(255,255,255,0.2)', borderRadius: '999px',
+                  padding: '4px 14px'
+                }}>
+                  <CheckCircle size={16} /> ¡Completado!
+                </div>
+              ) : unlocked ? (
+                <div style={{
+                  fontWeight: 700, color: '#FFDC00', fontSize: '1rem',
+                  background: 'rgba(255,220,0,0.15)', borderRadius: '999px',
+                  padding: '4px 16px', letterSpacing: '1px'
+                }}>
+                  ▶ Jugar
                 </div>
               ) : (
-                <div style={{ fontWeight: 'bold', opacity: 0.7 }}>Jugar ▶</div>
+                <div style={{
+                  fontWeight: 600, color: 'rgba(255,255,255,0.35)', fontSize: '0.85rem',
+                  background: 'rgba(255,255,255,0.06)', borderRadius: '999px',
+                  padding: '4px 14px'
+                }}>
+                  🔒 Bloqueado
+                </div>
+              )}
+
+              {/* Tooltip for locked */}
+              {!unlocked && (
+                <div style={{
+                  fontSize: '0.75rem', color: 'rgba(255,255,255,0.3)',
+                  textAlign: 'center', lineHeight: 1.4
+                }}>
+                  {lvl.level === 3
+                    ? 'Completa niveles 1 y 2 primero'
+                    : 'Completa Burbujas primero'}
+                </div>
               )}
             </motion.div>
-          )
+          );
         })}
       </div>
     </motion.div>
