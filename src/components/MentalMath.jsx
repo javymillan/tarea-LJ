@@ -61,7 +61,7 @@ const MentalMath = ({ tableNumber, onBack, onComplete, initialSavedAnswers = {} 
 
     if (allCorrect) {
       setTimerActive(false);
-      setMessage(`¡Excelente! Puntos: ${puntos}/${order.length}. Tiempo: ${time}s`);
+      setMessage(`¡Excelente Luis Javier! Puntos: ${puntos}/${order.length}. Tiempo: ${time}s`);
       setShowCompletion(true);
       triggerConfetti();
       onComplete('mental', { answers, time, puntos });

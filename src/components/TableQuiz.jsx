@@ -58,7 +58,7 @@ const TableQuiz = ({ tableNumber, onBack, onComplete, initialSavedAnswers = {} }
     setFeedback(newFeedback);
 
     if (allCorrect) {
-      setMessage('¡Felicidades! Todo está perfecto.');
+      setMessage('¡Felicidades Luis Javier! Todo está perfecto.');
       setShowCompletion(true);
       triggerConfetti();
       onComplete(tableNumber, answers);

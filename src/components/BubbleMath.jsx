@@ -59,7 +59,7 @@ const BubbleMath = ({ tableNumber, onBack, onComplete, initialSavedAnswers = {} 
     setFeedback(newFeedback);
 
     if (allCorrect) {
-      setMessage('¡Felicidades! Completaste la burbuja mágica.');
+      setMessage('¡Felicidades Luis Javier! Completaste la burbuja mágica.');
       setShowCompletion(true);
       triggerConfetti();
       onComplete('bubbles', { answers });

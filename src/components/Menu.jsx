@@ -80,14 +80,14 @@ const Menu = ({ progress, onSelectTable }) => {
             padding: '30px', 
             textAlign: 'center',
             background: 'linear-gradient(135deg, #FFD700 0%, #FFA502 100%)',
-            color: 'white',
+            color: '#001f3f',
             boxShadow: '0 10px 30px rgba(255, 165, 2, 0.4)'
           }}
         >
           <Award size={64} style={{ marginBottom: '15px' }} />
-          <h2 style={{ fontSize: '2rem', marginBottom: '10px' }}>¡ERES UN MASTER!</h2>
+          <h2 style={{ fontSize: '2rem', marginBottom: '10px' }}>¡ERES UN MASTER, LUIS JAVIER!</h2>
           <p style={{ fontSize: '1.2rem', fontWeight: '500' }}>
-            Has completado todas las tablas. ¡Felicidades!
+            Has completado todas las tablas del cuadernillo. ¡Qué gran trabajo!
           </p>
         </motion.div>
       )}

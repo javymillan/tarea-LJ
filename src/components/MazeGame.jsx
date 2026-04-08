@@ -59,7 +59,7 @@ const MazeGame = ({ tableNumber, onBack, onComplete, initialSavedAnswers = [] })
     setFeedback(newFeedback);
 
     if (allGood && !missedAny) {
-      setMessage('¡Felicidades! Encontraste el camino correcto a la salida.');
+      setMessage('¡Felicidades Luis Javier! Encontraste el camino correcto a la salida.');
       setShowCompletion(true);
       triggerConfetti();
       onComplete('maze', { answers: selected });
