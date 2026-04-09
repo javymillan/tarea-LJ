@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, CheckCircle, Palette } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Palette, Save } from 'lucide-react';
 import { triggerConfetti } from '../utils/confetti';
 
 const ColorByNumber = ({ tableNumber, onBack, onComplete, initialSavedAnswers = {} }) => {
