@@ -133,9 +133,15 @@ const TrueFalseGame = ({ tableNumber, onBack, onComplete, initialSavedAnswers = 
           })}
         </div>
 
-        {message && <div style={{ marginTop: '30px', fontWeight: 'bold', fontSize: '1.3rem', color: showCompletion ? 'var(--success)' : 'var(--error)' }}>{message}</div>}
-
-        {!showCompletion && <button className="button" style={{ marginTop: '30px' }} onClick={handleVerify}><Save size={24} /> Verificar Operaciones</button>}
+        {showCompletion ? (
+          <div style={{ marginTop: '30px' }}>
+            <button className="button success animate-bounce-in" onClick={onBack}>
+               ¡Ganaste! Volver al Mapa 🏆
+            </button>
+          </div>
+        ) : (
+          <button className="button" style={{ marginTop: '30px' }} onClick={handleVerify}><Save size={24} /> Verificar Operaciones</button>
+        )}
       </div>
     </motion.div>
   );

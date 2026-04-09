@@ -31,7 +31,7 @@ const ColorByNumber = ({ tableNumber, onBack, onComplete, initialSavedAnswers = 
     { id: 'paw-r', number: tableNumber * 2, path: "M 155,230 Q 180,240 170,270 Q 150,270 150,240" },
     // Details
     { id: 'snout', number: tableNumber * 8, path: "M 100,110 Q 120,110 120,130 Q 120,145 100,145 Q 80,145 80,130 Q 80,110 100,110" },
-    { id: 'nose', number: 8, path: "M 100,120 Q 105,120 105,125 Q 100,130 95,125 Q 95,120 100,120", isSpecial: true },
+    { id: 'nose', number: tableNumber * 8, path: "M 100,120 Q 105,120 105,125 Q 100,130 95,125 Q 95,120 100,120", isSpecial: true },
     // Extra sections to fill the space
     { id: 'bg-1', number: tableNumber * 1, path: "M 0,0 L 100,0 L 50,50 Z" },
     { id: 'bg-2', number: tableNumber * 5, path: "M 200,0 L 100,0 L 150,50 Z" },
@@ -53,18 +53,19 @@ const ColorByNumber = ({ tableNumber, onBack, onComplete, initialSavedAnswers = 
       : colorConfig.result === number;
 
     if (isCorrect || segmentId === 'nose') {
-      setFilledPaths(prev => ({ ...prev, [segmentId]: selectedColor }));
+      const newFilled = { ...filledPaths, [segmentId]: selectedColor };
+      setFilledPaths(newFilled);
       setMessage('');
+
+      // Check for completion using the new state immediately
+      const allFilled = bearSegments.every(s => !!newFilled[s.id]);
+      if (allFilled) {
+        setShowCompletion(true);
+        triggerConfetti();
+        onComplete('color_by_number', { answers: newFilled });
+      }
     } else {
       setMessage(`¡Ups! Ese no es el color para el número ${number}.`);
-    }
-
-    // Check for completion
-    const allFilled = bearSegments.every(s => (filledPaths[s.id] || s.id === segmentId));
-    if (allFilled) {
-      setShowCompletion(true);
-      triggerConfetti();
-      onComplete('color_by_number', { answers: filledPaths });
     }
   };
 
@@ -150,12 +151,34 @@ const ColorByNumber = ({ tableNumber, onBack, onComplete, initialSavedAnswers = 
           </svg>
         </div>
 
-        {message && <div style={{ marginTop: '20px', color: showCompletion ? 'var(--success)' : '#e67e22', fontWeight: 'bold' }}>{message}</div>}
-
-        {showCompletion && (
-          <div style={{ marginTop: '20px', color: 'var(--success)', fontWeight: 'bold', fontSize: '1.2rem' }}>
-            <CheckCircle style={{ verticalAlign: 'middle', marginRight: '5px' }} />
-            ¡Dibujo completadado! Luis Javier, eres un artista de las tablas.
+        {showCompletion ? (
+          <div style={{ marginTop: '20px' }}>
+            <div style={{ color: 'var(--success)', fontWeight: 'bold', fontSize: '1.4rem', marginBottom: '20px' }}>
+              <CheckCircle style={{ verticalAlign: 'middle', marginRight: '10px' }} size={30} />
+              ¡Dibujo completado! Luis Javier, eres un artista de las tablas.
+            </div>
+            <button className="button success animate-bounce-in" onClick={onBack}>
+               ¡Ganaste! Volver al Mapa 🏆
+            </button>
+          </div>
+        ) : (
+          <div style={{ marginTop: '20px' }}>
+            {message && <div style={{ color: '#e67e22', fontWeight: 'bold', marginBottom: '10px' }}>{message}</div>}
+            <button className="button" onClick={() => {
+              const missing = bearSegments.filter(s => !filledPaths[s.id]);
+              if (missing.length === 0) {
+                 // Trigger completion if they click verify and it's actually done
+                 const newFilled = { ...filledPaths };
+                 setShowCompletion(true);
+                 triggerConfetti();
+                 onComplete('color_by_number', { answers: newFilled });
+              } else {
+                 setMessage(`¡Todavía te faltan ${missing.length} partes por colorear!`);
+              }
+            }}>
+              <Save style={{ verticalAlign: 'middle', marginRight: '5px' }} size={20} />
+              Verificar Dibujo
+            </button>
           </div>
         )}
       </div>
