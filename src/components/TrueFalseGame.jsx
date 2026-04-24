@@ -58,7 +58,12 @@ const TrueFalseGame = ({ tableNumber, onBack, onComplete, initialSavedAnswers = 
       setMessage('¡Excelente Luis Javier! Identificaste todas las operaciones correctamente.');
       setShowCompletion(true);
       triggerConfetti();
-      onComplete('true_false', { answers: selections });
+      const reportAnswers = exercises.map(ex => ({
+        question: `${tableNumber} x ${ex.m} = ${ex.result}`,
+        userAnswer: selections[ex.id] === 'correct' ? 'Verdadero' : 'Falso',
+        isCorrect: (selections[ex.id] === 'correct' && ex.isCorrect) || (selections[ex.id] === 'incorrect' && !ex.isCorrect)
+      }));
+      onComplete('true_false', { answers: reportAnswers });
     } else {
       setMessage('Algunas operaciones no son correctas. ¡Revisa los lápices rojos!');
     }

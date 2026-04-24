@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Play, Star, Award, Lock } from 'lucide-react';
+import { Play, Star, Award, Lock, FileDown } from 'lucide-react';
+import { generateGenericReport } from '../utils/pdfGenerator';
 
 const Menu = ({ progress, onSelectTable }) => {
   const tables = Array.from({ length: 10 }, (_, i) => i + 1);
@@ -89,6 +90,28 @@ const Menu = ({ progress, onSelectTable }) => {
           <p style={{ fontSize: '1.2rem', fontWeight: '500' }}>
             Has completado todas las tablas del cuadernillo. ¡Qué gran trabajo!
           </p>
+        </motion.div>
+      )}
+
+      {Object.keys(progress).length > 0 && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          style={{ marginTop: '2rem', textAlign: 'center' }}
+        >
+          <button 
+            className="button"
+            onClick={() => generateGenericReport(progress)}
+            style={{ 
+              background: 'linear-gradient(135deg, #FF851B, #FF4136)', 
+              color: '#fff',
+              fontSize: '1.1rem',
+              padding: '12px 30px',
+              boxShadow: '0 4px 15px rgba(255, 133, 27, 0.4)'
+            }}
+          >
+            <FileDown size={20} /> Descargar Reporte General (PDF)
+          </button>
         </motion.div>
       )}
     </div>

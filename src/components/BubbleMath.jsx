@@ -62,7 +62,17 @@ const BubbleMath = ({ tableNumber, onBack, onComplete, initialSavedAnswers = {} 
       setMessage('¡Felicidades Luis Javier! Completaste la burbuja mágica.');
       setShowCompletion(true);
       triggerConfetti();
-      onComplete('bubbles', { answers });
+      const reportAnswers = puzzles.map(p => {
+        if (p.id === 1) return { question: `${tableNumber} x ${p.m}`, userAnswer: p.exTop, isCorrect: true };
+        const ans = answers[p.id];
+        const correctAns = p.top ? tableNumber * p.m : p.m;
+        return {
+          question: p.top ? `${tableNumber} x ${p.m} = ?` : `${tableNumber} x ? = ${p.givenTop}`,
+          userAnswer: ans,
+          isCorrect: parseInt(ans, 10) === correctAns
+        };
+      });
+      onComplete('bubbles', { answers: reportAnswers });
     } else {
       setMessage('Ops. Hay algunos errores, verifica las burbujas rojas.');
     }

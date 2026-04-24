@@ -62,7 +62,16 @@ const ColorByNumber = ({ tableNumber, onBack, onComplete, initialSavedAnswers = 
       if (allFilled) {
         setShowCompletion(true);
         triggerConfetti();
-        onComplete('color_by_number', { answers: newFilled });
+        const reportAnswers = bearSegments.map(s => {
+          const colorHex = newFilled[s.id];
+          const colorConfig = colorMap.find(c => c.color === colorHex);
+          return {
+            question: `Segmento ${s.id} (Número ${s.number})`,
+            userAnswer: colorConfig ? colorConfig.name : colorHex,
+            isCorrect: true
+          };
+        });
+        onComplete('color_by_number', { answers: reportAnswers });
       }
     } else {
       setMessage(`¡Ups! Ese no es el color para el número ${number}.`);
@@ -171,7 +180,16 @@ const ColorByNumber = ({ tableNumber, onBack, onComplete, initialSavedAnswers = 
                  const newFilled = { ...filledPaths };
                  setShowCompletion(true);
                  triggerConfetti();
-                 onComplete('color_by_number', { answers: newFilled });
+                 const reportAnswers = bearSegments.map(s => {
+                   const colorHex = newFilled[s.id];
+                   const colorConfig = colorMap.find(c => c.color === colorHex);
+                   return {
+                     question: `Segmento ${s.id} (Número ${s.number})`,
+                     userAnswer: colorConfig ? colorConfig.name : colorHex,
+                     isCorrect: true
+                   };
+                 });
+                 onComplete('color_by_number', { answers: reportAnswers });
               } else {
                  setMessage(`¡Todavía te faltan ${missing.length} partes por colorear!`);
               }

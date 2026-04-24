@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, BookOpen, Brain, Circle, Compass, CheckCircle, Lock, CheckSquare, Palette } from 'lucide-react';
+import { ArrowLeft, BookOpen, Brain, Circle, Compass, CheckCircle, Lock, CheckSquare, Palette, FileDown } from 'lucide-react';
+import { generateIndividualReport } from '../utils/pdfGenerator';
 
 const TableHub = ({ tableNumber, onBack, onSelectLevel, progress }) => {
   const tableLevelProgress = progress[tableNumber] || {};
@@ -50,7 +51,18 @@ const TableHub = ({ tableNumber, onBack, onSelectLevel, progress }) => {
         <h2 style={{ fontSize: '2.2rem', color: '#fff', textShadow: '1px 2px 8px rgba(0,0,0,0.3)', margin: 0, textAlign: 'center' }}>
           🎮 Misiones — Tabla del {tableNumber}
         </h2>
-        <div style={{ width: '105px' }} />
+        <div style={{ display: 'flex', gap: '10px' }}>
+          {Object.keys(tableLevelProgress).length > 0 && (
+            <button 
+              className="button" 
+              onClick={() => generateIndividualReport(tableNumber, tableLevelProgress)}
+              style={{ background: '#FF851B', color: '#fff' }}
+            >
+              <FileDown size={20} /> Reporte
+            </button>
+          )}
+          <div style={{ width: '5px' }} />
+        </div>
       </div>
 
       {/* Progress bar */}

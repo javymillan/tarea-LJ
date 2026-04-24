@@ -62,7 +62,12 @@ const MazeGame = ({ tableNumber, onBack, onComplete, initialSavedAnswers = [] })
       setMessage('¡Felicidades Luis Javier! Encontraste el camino correcto a la salida.');
       setShowCompletion(true);
       triggerConfetti();
-      onComplete('maze', { answers: selected });
+      const reportAnswers = selected.map(idx => ({
+        question: `Casilla ${idx}`,
+        userAnswer: grid[idx].text,
+        isCorrect: grid[idx].isTrue
+      }));
+      onComplete('maze', { answers: reportAnswers });
     } else if (!allGood) {
       setMessage('Marcaste casillas rojas que no son correctas. ¡Sigue intentando!');
     } else if (missedAny) {
